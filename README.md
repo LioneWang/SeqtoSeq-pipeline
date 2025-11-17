@@ -101,24 +101,11 @@ Seq2Seq-pipeline/
 
 1.  克隆本仓库：
     ```bash
-    git clone [https://github.com/YOUR_USERNAME/SeqtoSeq-pipeline.git](https://github.com/YOUR_USERNAME/SeqtoSeq-pipeline.git)
-    cd SeqtoSeq-pipeline
+    git clone https://github.com/LioneWang/SeqtoSeq-pipeline.git
     ```
 
-2.  (推荐) 创建并激活 Conda 环境：
-    ```bash
-    conda create -n nmt python=3.9
-    conda activate nmt
-    ```
+2.  (推荐) 用google colab
 
-3.  安装所有依赖：
-    ```bash
-    # 确保你已安装 PyTorch ([https://pytorch.org/](https://pytorch.org/))
-    pip install -r requirements.txt
-    ```
-    ( `requirements.txt` 应至少包含: `torch`, `numpy`, `tqdm`, `sentencepiece`, `sacrebleu`, `jupyter` )
-
----
 
 ## 🚀 运行完整流程
 
@@ -126,82 +113,31 @@ Seq2Seq-pipeline/
 
 ### 步骤 1: 下载和准备数据
 
-(请在此处添加你的数据下载说明，例如：)
-```bash
-# 假设你有一个脚本来下载和解压数据
-bash scripts/get_data.sh
-# 这将会在 data/ 目录下创建 train.zh 和 train.en
-```
+本项目使用 [WMT News Commentary v14](https://data.statmt.org/news-commentary/v14/) 数据集。
+可以定制数据集
 
 ### 步骤 2: 训练分词器 & 构建词汇表
 
 此步骤将训练 `src.model` 和 `tgt.model`，并生成 `vocab_zh_en.json`。
 
-```bash
-python vocab.py \
-    --train-src=data/train.zh \
-    --train-tgt=data/train.en \
-    --src-vocab-size=21000 \
-    --tgt-vocab-size=8000 \
-    vocab_zh_en.json
-```
 
 ### 步骤 3: 训练模型
 
 你可以选择训练 RNN 或 Transformer。
 
 #### 选项 A: 训练 RNN + Attention
-```bash
-python run.py train \
-    --model-type=rnn \
-    --train-src=data/train.zh \
-    --train-tgt=data/train.en \
-    --dev-src=data/dev.zh \
-    --dev-tgt=data/dev.en \
-    --vocab=vocab_zh_en.json \
-    --cuda \
-    --lr=5e-4 \
-    --batch-size=32 \
-    --save-to=model_rnn.bin
-```
 
 #### 选项 B: 训练 Transformer
-```bash
-python run.py train \
-    --model-type=transformer \
-    --train-src=data/train.zh \
-    --train-tgt=data/train.en \
-    --dev-src=data/dev.zh \
-    --dev-tgt=data/dev.en \
-    --vocab=vocab_zh_en.json \
-    --cuda \
-    --lr=3e-4 \
-    --batch-size=64 \
-    --save-to=model_transformer.bin
-```
 
 ### 步骤 4: 推理 & 评估 (BLEU)
 
 使用你训练好的模型在测试集上进行解码。
 
-```bash
-python run.py decode \
-    --model-type=transformer \
-    --model-path=model_transformer.bin \
-    --test-src=data/test.zh \
-    --test-tgt=data/test.en \
-    --output-file=outputs/test_outputs.txt \
-    --cuda
-```
 脚本将自动在 `test.en` (参考) 和 `test_outputs.txt` (假设) 之间计算**语料库 BLEU 分数**。
 
 ### 步骤 5: 可视化结果
 
-打开 Jupyter Notebook 来分析训练过程中的 `ppl.log` 或 `dev_ppl.log`。
-
-```bash
-jupyter notebook visualization.ipynb
-```
+打开 Jupyter Notebook 来分析训练过程中的注意力权重。
 
 ---
 
